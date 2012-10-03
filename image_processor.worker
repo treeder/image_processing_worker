@@ -1,6 +1,6 @@
 gem 'aws'
 gem 'subexec'
 gem 'mini_magick'
-file 'ironman.jpg'
+file 'iron_pony.png'
 exec 'image_processor.rb'
 name 'ImageProcessor'

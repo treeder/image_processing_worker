@@ -2,6 +2,7 @@ ranges = [1, 10, 100]
 require 'iron_worker_ng'
 times = {}
 ranges.each do |r|
+  config_data = YAML.load_file 'config.yml'
   start_time = Time.now
   threads = []
   r.times do |i|
@@ -9,7 +10,7 @@ ranges.each do |r|
     threads << Thread.new {
       t = client.tasks.create(
           'ImageProcessor',
-          'disable_network' => true
+          {'disable_network' => true}.merge(config_data)
       )
       client.tasks.wait_for(t.id) do |task|
         puts task.status
