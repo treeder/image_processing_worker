@@ -1,3 +1,25 @@
+# INPUTS:
+=begin
+image_url: URL to the original image
+
+aws: # your aws credentials to store transformed images
+  access_key: "YOUR ACCESS KEY"
+  secret_key: "YOUR SECRET KEY"
+  s3_bucket_name: "DESTINATION BUCKET NAME"
+
+operations: [ # an array of operations to perform
+  {
+    op: "name of imagemagick operation",
+    x*: "parameters for for the op"
+    format: "output format, eg: 'jpg'"
+    destination: "filename for new file, this is where it will be stored in the s3 bucket"
+  }
+]
+=end
+#
+# See enqueue.rb for a bunch of examples.
+#
+
 runtime 'ruby'
 
 gem 'aws'

@@ -122,7 +122,8 @@ end
 puts "Worker started"
 puts "Downloading image"
 filename = download_image
-params['operations'].each_pair do |k, v|
+params['operations'].each do |op|
+
   puts "\n\nPerforming #{k} with #{v.inspect}"
   output_filename = v['destination']
   image = MiniMagick::Image.open(filename)
