@@ -6,5 +6,5 @@ config_data = YAML.load_file 'config.yml'
 client = IronWorkerNG::Client.new()
 
 client.tasks.create(
-    'ImageProcessor',config_data
+    'image_processor',config_data
 )

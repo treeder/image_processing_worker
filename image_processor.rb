@@ -5,35 +5,25 @@ require 'aws'
 require 'subexec'
 require 'mini_magick'
 
-def resize(h)
-  image = MiniMagick::Image.open(filename)
+def resize(image, h)
   original_width, original_height = image[:width], image[:height]
   h['width'] ||= original_width
   h['height'] ||= original_height
-  output_filename = h['destination']
   image.resize "#{h['width']}x#{h['height']}"
-  image.format h['format']
-  image.write output_filename
-  output_filename
+  image
 end
 
-def generate_thumb(h)
-  output_filename = h['destination']
-  image = MiniMagick::Image.open(filename)
+def thumbnail(image, h)
   image.combine_options do |c|
     c.thumbnail "#{h['width']}x#{h['height']}"
     c.background 'white'
     c.extent "#{h['width']}x#{h['height']}"
     c.gravity "center"
   end
-  image.format h['format']
-  image.write output_filename
-  output_filename
+  image
 end
 
-def sketch(h)
-  output_filename = h['destination']
-  image = MiniMagick::Image.open(filename)
+def sketch(image, h)
   image.combine_options do |c|
     c.edge "1"
     c.negate
@@ -41,36 +31,22 @@ def sketch(h)
     c.colorspace "Gray"
     c.blur "0x.5"
   end
-  image.format h['format']
-  image.write output_filename
-  output_filename
+  image
 end
 
-def normalize(h)
-  output_filename = h['destination']
-  image = MiniMagick::Image.open(filename)
+def normalize(image, h)
   image.normalize
-  image.format h['format']
-  image.write output_filename
-  output_filename
+  image
 end
 
-def charcoal_sketch(h)
-  output_filename = h['destination']
-  image = MiniMagick::Image.open(filename)
+def charcoal(image, h)
   image.charcoal '1'
-  image.format h['format']
-  image.write output_filename
-  output_filename
+  image
 end
 
-def level(h)
-  output_filename = h['destination']
-  image = MiniMagick::Image.open(filename)
+def level(image, h)
   image.level " #{h['black_point']},#{h['white_point']},#{h['gamma']}"
-  image.format h['format']
-  image.write output_filename
-  output_filename
+  image
 end
 
 def tile(h)
@@ -110,18 +86,18 @@ def upload_file(filename)
   unless params['disable_network']
     files = [filename].flatten
     files.each do |filepath|
-    puts "\nUploading the file to s3..."
-    s3 = Aws::S3Interface.new(params['aws']['access_key'], params['aws']['secret_key'])
-    s3.create_bucket(params['aws']['s3_bucket_name'])
-    response = s3.put(params['aws']['s3_bucket_name'], filepath, File.open(filepath))
-    if response == true
-      puts "Uploading succesful."
-      link = s3.get_link(params['aws']['s3_bucket_name'], filepath)
-      puts "\nYou can view the file here on s3:", link
-    else
-      puts "Error placing the file in s3."
-    end
-    puts "-"*60
+      puts "Uploading the file to s3..."
+      s3 = Aws::S3Interface.new(params['aws']['access_key'], params['aws']['secret_key'])
+      s3.create_bucket(params['aws']['s3_bucket_name'])
+      response = s3.put(params['aws']['s3_bucket_name'], filepath, File.open(filepath))
+      if response == true
+        puts "Uploading successful."
+        link = s3.get_link(params['aws']['s3_bucket_name'], filepath)
+        puts "\nYou can view the file here on s3: ", link
+      else
+        puts "Error uploading to s3."
+      end
+      puts "-"*60
     end
   end
 end
@@ -131,7 +107,7 @@ def filename
 end
 
 def download_image()
-  puts "Filename:#{filename}"
+  puts "Downloading file: #{filename}"
   unless params['disable_network']
     File.open(filename, 'wb') do |fout|
       open(params['image_url']) do |fin|
@@ -146,7 +122,13 @@ end
 puts "Worker started"
 puts "Downloading image"
 filename = download_image
-params['operations'].keys.each do |k|
-  upload_file self.send(k, params['operations'][k])
+params['operations'].each_pair do |k, v|
+  puts "\n\nPerforming #{k} with #{v.inspect}"
+  output_filename = v['destination']
+  image = MiniMagick::Image.open(filename)
+  image = self.send(k, image, {}.merge(v))
+  image.format v['format'] if v['format']
+  image.write output_filename
+  upload_file output_filename
 end
 puts "Worker end"

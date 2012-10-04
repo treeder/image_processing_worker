@@ -11,29 +11,26 @@ operations:
     resize:
         width: 100
         height: 100
-        destination: "resized_fname.jpg"
         format: 'jpg'
-    generate_thumb:
+        destination: "resized_fname.jpg"
+    thumbnail:
          width: 50
          height: 50
          format: 'jpg'
-         destination: "thumb_fname.jpg"
+         destination: "thumb.jpg"
     sketch:
-         destination: "sketch_fname.jpg"
          format: 'jpg'
+         destination: "sketch.jpg"
     normalize:
-         destination: "normalize_fname.jpg"
          format: 'jpg'
-    charcoal_sketch:
-         destination: "charcoal_sketch_fname.jpg"
+         destination: "normalize.jpg"
+    charcoal:
          format: 'jpg'
+         destination: "charcoal.jpg"
     level:
+         format: 'jpg'
          destination: "level_fname.jpg"
          black_point: 10
          white_point: 250
          gamma: 1.0
-         format: 'jpg'
-#    tile:
-#         num_tiles_height: 3
-#         num_tiles_width: 3
-#         format: 'jpg'
+
