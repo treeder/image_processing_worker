@@ -6,30 +6,4 @@ aws:
     access_key: "YOUR ACCESS KEY"
     secret_key: "YOUR SECRET KEY"
     s3_bucket_name: "BUCKET NAME"
-operations:
-    resize:
-        width: 100
-        height: 100
-        format: 'jpg'
-        destination: "resized_fname.jpg"
-    thumbnail:
-         width: 50
-         height: 50
-         format: 'jpg'
-         destination: "thumb.jpg"
-    sketch:
-         format: 'jpg'
-         destination: "sketch.jpg"
-    normalize:
-         format: 'jpg'
-         destination: "normalize.jpg"
-    charcoal:
-         format: 'jpg'
-         destination: "charcoal.jpg"
-    level:
-         format: 'jpg'
-         destination: "level_fname.jpg"
-         black_point: 10
-         white_point: 250
-         gamma: 1.0
 

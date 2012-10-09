@@ -120,15 +120,15 @@ end
 
 
 puts "Worker started"
+p params
 puts "Downloading image"
 filename = download_image
 params['operations'].each do |op|
-
-  puts "\n\nPerforming #{k} with #{v.inspect}"
-  output_filename = v['destination']
+  puts "\n\nPerforming #{op[:op]} with #{op.inspect}"
+  output_filename = op['destination']
   image = MiniMagick::Image.open(filename)
-  image = self.send(k, image, {}.merge(v))
-  image.format v['format'] if v['format']
+  image = self.send(op[:op], image, {}.merge(op))
+  image.format op['format'] if op['format']
   image.write output_filename
   upload_file output_filename
 end
