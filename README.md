@@ -1,11 +1,10 @@
-Image Processing in Ruby with IronWorker
+Image Processing Worker for IronWorker
 ================================
 
-This is the code that goes with this article: http://dev.iron.io/solutions/image-processing/
+A worker for IronWorker to process images.
 
-To run this example:
+## Quick Start
 
-1. [Setup your Iron.io credentials](http://dev.iron.io/articles/configuration/) if you haven't done so already.
 First off, you need an [Iron.io](http://www.iron.io) account, if you don't have one go sign up for a free account.
 
 Second, you need to have your [iron.json file setup](http://dev.iron.io/worker/reference/configuration/).
@@ -41,10 +40,11 @@ require 'iron_worker_ng'
 # Create the worker payload which has all our image manipulation functions we want to perform.
 # See enqueue.rb for more operations.
 payload = {
-    aws:
-        access_key: "YOUR ACCESS KEY",
-        secret_key: "YOUR SECRET KEY",
-        s3_bucket_name: "BUCKET NAME",
+    aws: {
+        access_key: "MY ACCESS KEY",
+        secret_key: "MY SECRET KEY",
+        s3_bucket_name: "MY BUCKET NAME"
+    },
     image_url: "http://dev.iron.io/images/iron_pony.png",
     operations: [
         {
@@ -59,7 +59,6 @@ client = IronWorkerNG::Client.new()
 client.tasks.create(
     'image_processor', payload
 )
-
 ```
 
 Now go look at [HUD](http://hud.iron.io) to see the task and the log.
@@ -67,11 +66,8 @@ Now go look at [HUD](http://hud.iron.io) to see the task and the log.
 ## Want to modify the worker to suit your needs?
 
 1. Clone this repo (or fork it and clone your own - feel free to make a pull request when you're done).
-
 1. Install required gems: `iron_worker install image_processor`
-1. From this directory, run: `iron_worker upload image_processor`
-1. Copy the config_example.yml to config.yml and fill it in with your aws credentials
-1. Run `ruby enqueue.rb`
+1. Make your changes
+1. Upload your changes to your Iron account: `iron_worker upload image_processor`
+1. Share your new worker!
 
-Now go check hud, https://hud.iron.io , find the task and view the log to get the URL's for
-all your images.
