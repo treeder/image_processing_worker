@@ -1,5 +1,4 @@
 require 'open-uri'
-require 'RMagick'
 
 require 'aws'
 require 'subexec'
