@@ -1,4 +1,4 @@
-Image Processing Worker for IronWorker
+Image Processing Docker Worker for IronWorker
 ================================
 
 An image processing Docker image for us on IronWorker to process images.
@@ -33,7 +33,7 @@ docker run --rm -v "$PWD":/worker -w /worker iron/ruby:dev bundle install --stan
 docker run --rm -it -e "PAYLOAD_FILE=payload.json" -v "$PWD":/worker -w /worker treeder/ruby-imagemagick ruby image_processor.rb
 ```
 
-### 3. Build image
+### 3. Build Docker image
 
 ```sh
 docker build -t treeder/image_processor:latest .
@@ -45,7 +45,7 @@ docker build -t treeder/image_processor:latest .
 docker run --rm -it -e "PAYLOAD_FILE=payload.json" -v "$PWD":/worker -w /worker treeder/image_processor
 ```
 
-### 5. Push to Docker hub
+### 5. Push to Docker Hub
 
 ```sh
 docker push treeder/image_processor
