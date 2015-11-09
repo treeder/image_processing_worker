@@ -1,8 +1,11 @@
+require_relative 'bundle/bundler/setup'
 require 'open-uri'
-
 require 'aws'
-require 'subexec'
+#require 'subexec'
 require 'mini_magick'
+require 'iron_worker'
+
+@output_path = "tmp_images/"
 
 def resize(image, h)
   original_width, original_height = image[:width], image[:height]
@@ -48,6 +51,16 @@ def level(image, h)
   image
 end
 
+def img_path(filename)
+  "#{@output_path}#{filename}"
+end
+
+def write_image(image, filename)
+  image.write img_path(filename)
+  # Just in case this is on Docker, gotta change permissions
+  `chmod a+rw #{img_path(filename)}`
+end
+
 def tile(h)
   file_list=[]
   image = MiniMagick::Image.open(filename)
@@ -60,7 +73,7 @@ def tile(h)
       output_filename = "filename_#{slice_h}_#{slice_w}.jpg"
       image = MiniMagick::Image.open(filename)
       image.crop "#{slice_width}x#{slice_height}+#{slice_w*slice_width}+#{slice_h*slice_height}"
-      image.write output_filename
+      write_image(image, output_filename)
       file_list[slice_w][slice_h] = output_filename
     end
   end
@@ -81,17 +94,17 @@ def merge_images(col_num, row_num, file_list)
   output_filename
 end
 
-def upload_file(filename)
-  unless params['disable_network']
+def upload_file(payload, filename)
+  unless payload['disable_network']
     files = [filename].flatten
     files.each do |filepath|
       puts "Uploading the file to s3..."
-      s3 = Aws::S3Interface.new(params['aws']['access_key'], params['aws']['secret_key'])
-      s3.create_bucket(params['aws']['s3_bucket_name'])
-      response = s3.put(params['aws']['s3_bucket_name'], filepath, File.open(filepath))
+      s3 = Aws::S3Interface.new(payload['aws']['access_key'], payload['aws']['secret_key'])
+      s3.create_bucket(payload['aws']['s3_bucket_name'])
+      response = s3.put(payload['aws']['s3_bucket_name'], filepath, File.open(img_path(filepath)))
       if response == true
         puts "Uploading successful."
-        link = s3.get_link(params['aws']['s3_bucket_name'], filepath)
+        link = s3.get_link(payload['aws']['s3_bucket_name'], filepath)
         puts "\nYou can view the file here on s3: ", link
       else
         puts "Error uploading to s3."
@@ -101,34 +114,38 @@ def upload_file(filename)
   end
 end
 
-def filename
-  File.basename(params['image_url'])
+def filename(payload)
+  File.basename(payload['image_url'])
 end
 
-def download_image()
-  puts "Downloading file: #{filename}"
-  unless params['disable_network']
-    File.open(filename, 'wb') do |fout|
-      open(params['image_url']) do |fin|
+def download_image(payload)
+  fname = filename(payload)
+  puts "Downloading file: #{fname}"
+  unless payload['disable_network']
+    File.open(fname, 'wb') do |fout|
+      open(payload['image_url']) do |fin|
         IO.copy_stream(fin, fout)
       end
     end
   end
-  filename
+  fname
 end
 
+FileUtils.mkdir_p(@output_path)
+`chmod a+rw #{@output_path}`
 
 puts "Worker started"
-p params
+payload = IronWorker.payload
+p payload
 puts "Downloading image"
-filename = download_image
-params['operations'].each do |op|
-  puts "\n\nPerforming #{op[:op]} with #{op.inspect}"
+filename = download_image(payload)
+payload['operations'].each do |op|
+  puts "\nPerforming #{op['op']} with #{op.inspect}"
   output_filename = op['destination']
-  image = MiniMagick::Image.open(filename)
-  image = self.send(op[:op], image, {}.merge(op))
+  image = MiniMagick::Image.open(filename(payload))
+  image = self.send(op['op'], image, {}.merge(op))
   image.format op['format'] if op['format']
-  image.write output_filename
-  upload_file output_filename
+  write_image(image, output_filename)
+  upload_file payload, output_filename
 end
 puts "Worker end"

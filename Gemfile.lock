@@ -1,0 +1,35 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    aws (2.10.2)
+      http_connection
+      uuidtools
+      xml-simple
+    http_connection (1.4.4)
+    iron_core (1.0.9)
+      rest (>= 3.0.4)
+    iron_worker (3.2.2)
+      iron_core (>= 0.5.1)
+      json (> 1.8.1)
+      rest (>= 3.0.6)
+    json (1.8.3)
+    mini_magick (4.3.6)
+    net-http-persistent (2.9.4)
+    netrc (0.11.0)
+    rest (3.0.6)
+      net-http-persistent (>= 2.9.1)
+      netrc
+    uuidtools (2.1.5)
+    xml-simple (1.1.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  aws
+  iron_worker
+  mini_magick
+  rest
+
+BUNDLED WITH
+   1.10.5

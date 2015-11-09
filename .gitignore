@@ -20,3 +20,7 @@ doc/
 .idea/
 config.yml
 iron.json
+payload.json
+bundle/
+.bundle/
+tmp_images/
