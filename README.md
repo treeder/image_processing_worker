@@ -86,7 +86,7 @@ Now go look at [HUD](http://hud.iron.io) to see the task and the log.
 Now let's batch up ALL the images.
 
 ```sh
-docker run --rm -it -e "PAYLOAD_FILE=payload.json" -e IRON_TOKEN -e IRON_PROJECT_ID -v "$PWD":/worker -w /worker iron/ruby ruby batch_process.rb
+docker run --rm -it -e "PAYLOAD_FILE=payload.json" -e IRON_TOKEN -e IRON_PROJECT_ID -v "$PWD":/worker -w /worker iron/ruby ruby batch.rb
 ```
 
 Boom, that will queue up almost 1000 images and they will all be processed in parallel
