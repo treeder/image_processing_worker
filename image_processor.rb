@@ -137,11 +137,11 @@ FileUtils.mkdir_p(@output_path)
 puts "Worker started"
 payload = IronWorker.payload
 # p payload
-filename = download_image(payload)
+file = download_image(payload)
 payload['operations'].each do |op|
   puts "\nPerforming #{op['op']} with #{op.inspect}"
   output_filename = op['destination']
-  image = MiniMagick::Image.open(filename(payload))
+  image = MiniMagick::Image.open(file)
   image = self.send(op['op'], image, {}.merge(op))
   image.format op['format'] if op['format']
   write_image(image, output_filename)

@@ -10,14 +10,15 @@ First off, you need an [Iron.io](http://www.iron.io) account, if you don't have 
 Second, you need to have your [Iron credentials setup](http://dev.iron.io/worker/reference/configuration/) and the
 [iron CLI tool](https://github.com/iron-io/ironcli) installed.
 
+Third, copy `payload_example.json` to `payload.json` and fill in your AWS credentials.
+
 Now you can get cracking!
 
 ## Usage
 
 **NOTE**: Replace `treeder` everywhere below with your Docker Hub username.
 
-The payload for this worker defines the image operations you'd like to perform and where
-here to store the results. See `payload_example.json` for an example.
+The payload for this worker defines the image operations you'd like to perform and where to store the results. See `payload_example.json` for an example.
 
 ## Test / build
 
@@ -59,8 +60,7 @@ we can start using that to process massive amounts of images.
 First, w need to tell IronWorker about the image we just made:
 
 ```sh
-iron worker upload --name treeder/image_processor treeder/image_processor
-# TODO: Change this to register when ready
+iron register treeder/image_processor
 ```
 
 Then we can just start queuing tasks!  The following is just a quick way to test
@@ -91,3 +91,6 @@ docker run --rm -it -e "PAYLOAD_FILE=payload.json" -e IRON_TOKEN -e IRON_PROJECT
 
 Boom, that will queue up almost 1000 images and they will all be processed in parallel
 and put into your s3 bucket in a **matter of seconds**.
+
+Of course you can now Dockerize the batch.rb script, register that with Iron.io
+then [schedule it](http://dev.iron.io/worker/scheduling/).
