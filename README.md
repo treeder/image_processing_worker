@@ -1,7 +1,7 @@
 Image Processing Docker Worker for IronWorker
 ================================
 
-An image processing Docker image for us on IronWorker to process images.
+An image processing Docker image for use on IronWorker to process images.
 
 ## Setup your Iron account (if you don't have one yet)
 
