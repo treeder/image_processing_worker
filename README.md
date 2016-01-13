@@ -37,19 +37,21 @@ docker run --rm -it -e "PAYLOAD_FILE=payload.json" -v "$PWD":/worker -w /worker 
 ### 3. Build Docker image
 
 ```sh
-docker build -t treeder/image_processor:latest .
+docker build -t treeder/image_processor:0.0.1 .
 ```
+
+**NOTE**: Everytime you change your worker code, be sure to change the version `0.0.1` in the build command and all the rest of the Docker commands.
 
 ### 4. Test Docker image with a single image
 
 ```sh
-docker run --rm -it -e "PAYLOAD_FILE=payload.json" -v "$PWD":/worker -w /worker treeder/image_processor
+docker run --rm -it -e "PAYLOAD_FILE=payload.json" -v "$PWD":/worker -w /worker treeder/image_processor:0.0.1
 ```
 
 ### 5. Push to Docker Hub
 
 ```sh
-docker push treeder/image_processor
+docker push treeder/image_processor:0.0.1
 ```
 
 ## Run a single task on IronWorker
@@ -60,7 +62,7 @@ we can start using that to process massive amounts of images.
 First, w need to tell IronWorker about the image we just made:
 
 ```sh
-iron register treeder/image_processor
+iron register treeder/image_processor:0.0.1
 ```
 
 Then we can just start queuing tasks!  The following is just a quick way to test
